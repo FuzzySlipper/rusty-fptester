@@ -1,0 +1,55 @@
+{
+  "voxelSize": 0.5,
+  "spawn": [8, 0.92, 5],
+  "spawnYawDegrees": 0,
+  "player": {
+    "height": 1.8, "crouchedHeight": 1.1, "radius": 0.3,
+    "speed": 4.5, "sprintSpeed": 7, "jumpSpeed": 6.5, "gravity": 20,
+    "maximumStepHeight": 0.3, "maximumSlopeDegrees": 45,
+    "pointerRadiansPerUnit": 0.002
+  },
+  "interaction": {"reach": 3.5, "holdDistance": 2, "holdSlack": 0.15, "holdReelSpeed": 12, "throwSpeed": 11},
+  "volumes": [
+    {"label":"floor", "min":[0,-0.5,0], "max":[48,0,24], "material":1},
+    {"label":"west wall", "min":[0,0,0], "max":[0.5,6,24], "material":2},
+    {"label":"east wall", "min":[47.5,0,0], "max":[48,6,24], "material":2},
+    {"label":"south wall", "min":[0,0,0], "max":[48,6,0.5], "material":2},
+    {"label":"north wall", "min":[0,0,23.5], "max":[48,6,24], "material":2},
+    {"label":"slopes partition south", "min":[15.5,0,0], "max":[16,5,8], "material":3},
+    {"label":"slopes partition north", "min":[15.5,0,16], "max":[16,5,24], "material":3},
+    {"label":"jump partition south", "min":[31.5,0,0], "max":[32,5,8], "material":4},
+    {"label":"jump partition north", "min":[31.5,0,16], "max":[32,5,24], "material":4},
+    {"label":"raised landing 1m", "min":[19,0,17], "max":[22,1,22], "material":4},
+    {"label":"raised landing 2m", "min":[24,0,17], "max":[27,2,22], "material":4},
+    {"label":"raised landing 3m", "min":[29,0,17], "max":[31,3,22], "material":4},
+    {"label":"crouch tunnel left", "min":[10,0,18], "max":[10.5,2.5,23], "material":3},
+    {"label":"crouch tunnel right", "min":[13.5,0,18], "max":[14,2.5,23], "material":3},
+    {"label":"crouch tunnel ceiling 1.5m", "min":[10,1.5,18], "max":[14,2.5,23], "material":3}
+  ],
+  "ramps": [
+    {"label":"15 degree ramp", "origin":[2,0,10], "width":2, "length":6, "angleDegrees":15, "color":[0.2,0.72,0.62]},
+    {"label":"30 degree ramp", "origin":[5,0,10], "width":2, "length":5, "angleDegrees":30, "color":[0.18,0.62,0.76]},
+    {"label":"50 degree ramp", "origin":[8,0,10], "width":2, "length":3, "angleDegrees":50, "color":[0.93,0.57,0.23]},
+    {"label":"65 degree ramp", "origin":[11,0,10], "width":2, "length":2, "angleDegrees":65, "color":[0.83,0.3,0.28]}
+  ],
+  "blocks": [
+    {"label":"0.2m step", "center":[2,0.1,7], "size":[2,0.2,2]},
+    {"label":"0.3m step", "center":[5,0.15,7], "size":[2,0.3,2]},
+    {"label":"0.4m step", "center":[11,0.2,7], "size":[2,0.4,2]},
+    {"label":"0.6m step", "center":[14,0.3,7], "size":[1,0.6,2]},
+    {"label":"jump block 0.5m", "center":[19,0.25,7], "size":[2,0.5,2]},
+    {"label":"jump block 1m", "center":[22,0.5,7], "size":[2,1,2]},
+    {"label":"jump block 1.5m", "center":[25,0.75,7], "size":[2,1.5,2]},
+    {"label":"jump block 2m", "center":[28,1,7], "size":[2,2,2]}
+  ],
+  "cubes": [
+    {"label":"small / 1kg", "center":[7.5,0.3,3], "size":0.5, "mass":1, "color":[0.95,0.72,0.25]},
+    {"label":"medium / 4kg", "center":[9,0.55,3], "size":1, "mass":4, "color":[0.93,0.38,0.28]},
+    {"label":"large / 12kg", "center":[11,0.8,3], "size":1.5, "mass":12, "color":[0.59,0.43,0.9]},
+    {"label":"small / 1kg", "center":[36,0.3,10], "size":0.5, "mass":1, "color":[0.95,0.72,0.25]},
+    {"label":"medium / 4kg", "center":[38,0.55,10], "size":1, "mass":4, "color":[0.93,0.38,0.28]},
+    {"label":"large / 12kg", "center":[41,0.8,10], "size":1.5, "mass":12, "color":[0.59,0.43,0.9]},
+    {"label":"stack base / 4kg", "center":[38,0.52,17], "size":1, "mass":4, "color":[0.2,0.72,0.62]},
+    {"label":"stack top / 1kg", "center":[38,1.35,17], "size":0.5, "mass":1, "color":[0.95,0.72,0.25]}
+  ]
+}

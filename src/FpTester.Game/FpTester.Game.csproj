@@ -8,23 +8,24 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <Deterministic>true</Deterministic>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <RustyEngineProductEntryType>RustyTemplate.Game.RustyTemplateProduct</RustyEngineProductEntryType>
-    <RustyEngineProductId>rusty-template</RustyEngineProductId>
-    <RustyEngineProductTitle>Rusty Template</RustyEngineProductTitle>
+    <RustyEngineProductEntryType>FpTester.Game.FpTesterProduct</RustyEngineProductEntryType>
+    <RustyEngineProductId>rusty-fptester</RustyEngineProductId>
+    <RustyEngineProductTitle>Rusty FP Tester</RustyEngineProductTitle>
     <RustyEngineProductUiRoot>$(MSBuildProjectDirectory)/../ui</RustyEngineProductUiRoot>
     <RustyEngineProductUiEntry>main.js</RustyEngineProductUiEntry>
     <RustyEngineProductContentRoot>$(MSBuildProjectDirectory)/../../content</RustyEngineProductContentRoot>
-    <RustyEngineProductUiProjectionStream>rusty-template</RustyEngineProductUiProjectionStream>
-    <RustyEngineProductUiProjectionContract>rusty.template.counter</RustyEngineProductUiProjectionContract>
+    <RustyEngineProductUiProjectionStream>rusty-fptester</RustyEngineProductUiProjectionStream>
+    <RustyEngineProductUiProjectionContract>rusty.fptester.hud</RustyEngineProductUiProjectionContract>
     <RustyEngineProductLifecycleMode>realtime</RustyEngineProductLifecycleMode>
     <RustyEngineProductFixedStepHz>60</RustyEngineProductFixedStepHz>
     <RustyEngineProductFixedStepMaxCatchUpSteps>4</RustyEngineProductFixedStepMaxCatchUpSteps>
-    <RustyEngineProductInputCursorMode>unlocked</RustyEngineProductInputCursorMode>
+    <RustyEngineProductInputCursorMode>pointer-lock</RustyEngineProductInputCursorMode>
     <RustyEngineWatchPaths>$(MSBuildProjectDirectory);$(RustyEngineProductUiRoot);$(RustyEngineProductContentRoot)</RustyEngineWatchPaths>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Rusty.Engine" Version="[$(RustyEnginePackageVersion)]" />
-    <RustyEngineProductInputIntent Include="increment" Value="digital" />
+    <RustyEngineProductInputIntent Include="reset" Value="digital" />
+    <RustyEngineProductInputMapping Include="reset.key-r" Intent="reset" Trigger="key:key-r:pressed" />
   </ItemGroup>
 </Project>

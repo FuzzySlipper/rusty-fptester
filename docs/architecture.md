@@ -2,54 +2,54 @@
 
 > The product decides. The Engine guarantees.
 
-```text
-Counter state and policy (C#)
-  -> Rusty.Engine safe SDK
-  -> SDK-generated bind entry point and ABI
-  -> packaged Rust host, input, UI transport, and browser shell
-  -> DOM companion
-```
-
-## Owners
-
-| Path or service | Responsibility |
+| Owner | Responsibility |
 | --- | --- |
-| `src/RustyTemplate.Game/Counter/CounterState.cs` | Counter value, increment saturation, and reset policy |
-| `src/RustyTemplate.Game/RustyTemplateProduct.cs` | Lifecycle callbacks, semantic input interpretation, and counter projection |
-| `src/RustyTemplate.Game/RustyTemplate.Game.csproj` | Explicit product entry, content/UI roots, intents, and host defaults |
-| `src/ui/main.js` | DOM button/label, intent submission, projection subscription, and UI cleanup |
-| `content/` | Product-authored data |
-| Engine SDK/runtime | Generated interop, admitted updates/input, retained UI transport, host, renderer, and browser shell |
+| `src/FpTester.Game/FpTesterProduct.cs` | Explicit composition, lifecycle, pending actions and Engine-admitted step order |
+| `Scene/LabDefinition.cs`, `content/lab.json` | Typed authored geometry and adjustable values, read through Engine Content |
+| `Scene/LabScene.cs` | Session, voxel admission, static fixtures, dynamic body/entity bindings and presentation lifetimes |
+| `Scene/LabGeometry.cs` | Authored triangular-prism and box geometry; no collision solver or renderer |
+| `Player/PlayerController.cs` | Controller configuration, look policy and accepted character continuation in Engine EntityStore |
+| `Interaction/CubeInteraction.cs` | Pickup/drop/throw policy, selected body and Engine tether lifetime |
+| `Ui/` | Typed observation and HUD projection layout |
+| `src/ui/main.js` | DOM telemetry, instructions and reset intent |
+| Engine SDK/runtime | FpsInput/PhysicalInputState, Look, admitted time, controller, collision, Dynamics, entities, content, rendering, camera, UI transport and host |
 
-## Lifecycle and data flow
+## One update path
 
-The installed runtime loads the product assembly through its SDK-generated bind
-entry point. The bind checks
-the SDK/runtime ABI identity and constructs the product with
-`ProductCreateContext`. The product opens its UI stream through `IEngineContext.Ui`.
+Each callback consumes Engine input through `FpsInput`. Pointer look remains free
+on zero-step updates; controller look uses admitted simulation seconds. Press
+edges remain pending until an admitted step and Clear/Pause/Reset cancels them.
+For every Engine-admitted fixed step:
 
-Engine calls `Start` and admits `ProductUpdate` callbacks. The DOM button
-submits the declared `increment` intent. C# interprets active direct-digital
-input, updates its counter, and publishes a typed `UiValue`. The DOM observes
-that projection and displays its number; it holds no authoritative counter.
+1. Propose the character step using current dynamic cube poses/velocities and
+   Engine support continuation; retain only the accepted transform and motion.
+2. Refresh Engine WorldInteraction focus; apply pending pickup, drop or throw.
+3. Update the held body's Engine fixed tether, apply a pending launch impulse,
+   and step/read Dynamics through EntityDynamicsAdapter once.
 
-Engine owns pause/resume/restart/shutdown admission. Product callbacks apply
-local policy, such as resetting the counter on restart. Disposal releases the
-UI stream. Resource lifetimes and admitted update facts remain Engine-owned.
+Engine EntityStore holds player continuation and the body readout projection;
+Dynamics remains authoritative for loose cubes. Scene fixtures remain immutable
+between reloads. Camera samples, graphics facts and the UI derive from those
+owners. There is no downstream accumulator, second clock, collision solver,
+input transport, browser renderer or handwritten interop.
 
-## Build and host
+Voxel cells and static ramp/block meshes are admitted into one SpatialSession.
+Dynamics binds that same collision scene. Dynamic cubes reach the character as
+call-local CharacterObstacle values; Engine applies current support translation
+and rotation through CharacterSupport. The held cube is excluded from character
+obstacles to avoid self-collision during carrying. The body remains dynamic and
+collides with the world and other cubes while tethered.
 
-`Directory.Build.props` pins one immutable SDK/runtime pair. The Engine `rusty`
-command installs it into its shared cache (`rusty install`), supplies its
-package source to restores, and runs the product on its runtime (`rusty dev`,
-which owns staging, watching, worker replacement and serving). `rusty build`
-stages CoreCLR through `StageRustyEngineCoreClrProduct`; `rusty build --aot`
-runs `VerifyRustyEngineAot` for explicit fidelity/release checks. Generated
-bindings and the bind entry point are ignored output, never edited sources.
-The product supplies only its C#, DOM UI and content; browser assets and host
-binaries stay in the Engine runtime. The `engine-pair` workflow advances the
-pin only after the product builds and serves on the new pair.
+Engine WorldInteraction owns focus, reach, visibility eligibility and fresh use
+checks. Product facts label cubes and mark them unavailable while holding one.
+Engine InteractionVisibilityQuery uses the current collider projection, ignoring
+the target body's own collider. A reset changes interaction incarnation so old
+target observations cannot activate a reset cube.
 
-Before adding a mechanism, check both the installed safe SDK and the owners
-above. Product meaning stays downstream. A missing Engine capability is an
-upstream request, not another local host, transport, scheduler, or renderer.
+Dispose interaction constraints, camera, bodies/world, voxel projection,
+appearances, mesh/material resources and session in dependency order. The SDK
+emits bindings under ignored `obj/`; ordinary CoreCLR builds use only the pinned
+package/runtime. NativeAOT is optional and separately evidenced.
+
+Character/body contact momentum exchange is a missing C# Engine binding, not
+implemented here. See [engine-contact-gap.md](engine-contact-gap.md).

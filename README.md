@@ -1,87 +1,91 @@
-# Rusty Template
+# Rusty FP Tester
 
-A minimal Rusty Engine product: C# owns a counter, a DOM button sends an
-`increment` intent, and Engine transports the counter projection to the UI.
-The packaged Engine owns the host, input, update loop, and browser shell.
+A small first-person controller lab for Rusty Engine downstream projects. C# selects
+the test geometry, controller tuning and cube interaction rules. The pinned Engine
+owns input, character collision, rigid-body physics, rendering and the host.
 
-## Setup
+## Run
 
-The supported runtime pair targets Linux x64. Install the .NET 10 SDK, `curl`
-and `tar`. NativeAOT also needs the platform compiler/linker prerequisites
-(Clang and zlib development headers on Linux). Get the Engine's `rusty`
-command once:
+Install the .NET 10 SDK and the Engine's `rusty` command, then:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/FuzzySlipper/rusty-engine/main/scripts/install-rusty.sh | bash
+rusty install
+rusty dev --project src/FpTester.Game/FpTester.Game.csproj --port 8799 --live-debug
 ```
 
-Then, from this repository:
+Open the URL printed by the host and click the scene to capture the mouse.
+
+| Control | Action |
+| --- | --- |
+| WASD / left stick | Move |
+| Mouse / right stick | Look |
+| Space / gamepad A | Jump |
+| Ctrl / gamepad B | Crouch |
+| Shift / left stick click | Sprint |
+| E / gamepad X | Pick up the focused cube; drop the held cube |
+| Primary mouse / right trigger | Throw the held cube |
+| R / HUD Reset lab button | Reset player and cubes |
+| Escape | Release pointer lock |
+
+## Scene
+
+Three connected voxel rooms share a level floor and open overhead space:
+
+- **Slopes and clearance:** smooth 15°, 30°, 50° and 65° ramps, steps at 0.2,
+  0.3, 0.4 and 0.6 metres, and a 1.5-metre-high crouch tunnel.
+- **Jump course:** blocks from 0.5 to 2 metres high and raised voxel landings at
+  1, 2 and 3 metres, separated by gaps.
+- **Physics sandbox:** 0.5-, 1- and 1.5-metre dynamic cubes with different masses,
+  plus a small stack. A second set near spawn makes pickup tests quick.
+
+`content/lab.json` owns the scene, player tuning, masses and hold/throw values.
+Edits rebuild/reload through `rusty dev`. The HUD reports feet, velocity, stance,
+grounding, support, contacts, blocking and interaction counts. `R` resets the
+current lab without rewinding Engine simulation time.
+
+**Known Engine gap:** character collision with the cubes is available, but the
+pinned C# bridge does not expose rigid-body contact push impulse proposals.
+Walking into a cube therefore tests blocking, not physical pushing. There is
+also no reciprocal rigid-body character collider in this integration. Pickup
+uses an Engine fixed tether; throws and body/body/world contacts use Dynamics.
+See [the narrow upstream request](docs/engine-contact-gap.md) before treating
+this lab as evidence for bump-to-push behavior.
+
+## Downstream workflow
+
+`Directory.Build.props` contains the exact matched SDK/runtime pin. No sibling
+Engine checkout is used to build or launch the product.
 
 ```bash
 rusty status
-rusty install
-rusty dev --project src/RustyTemplate.Game/RustyTemplate.Game.csproj --port 8787
-```
-
-Open the URL printed by the host. The Increment button changes the counter.
-`rusty dev` runs the pinned pair's runtime: CoreCLR loads the product, and
-changes to declared C#, UI, or content inputs rebuild and reload it. See
-`rusty dev --help` for `--bind-host`, `--live-debug`, and `--debugger`.
-
-`Directory.Build.props` pins the exact SDK/runtime pair. `rusty install`
-downloads it once into the shared Engine cache, and later builds and runs work
-offline. No Engine source checkout is required.
-
-To adopt the newest published pair deliberately:
-
-```bash
+rusty build --project src/FpTester.Game/FpTester.Game.csproj
+rusty update --check
+# Deliberate upgrade: read the listed release notes, then build and playtest.
 rusty update
-rusty build --project src/RustyTemplate.Game/RustyTemplate.Game.csproj
+# Optional NativeAOT fidelity check:
+rusty build --project src/FpTester.Game/FpTester.Game.csproj --aot
 ```
 
-`rusty update` lists the release notes to read; include the changed
-`Directory.Build.props` in the resulting source change. This repository's
-`engine-pair` workflow does the same every six hours: it moves the pin only
-after the product builds and serves on the new pair, and otherwise opens an
-`engine-pair-update` issue with the build output and the notes to read. For an explicit
-NativeAOT fidelity/release check:
+The inherited `engine-pair` GitHub workflow now targets this product and validates
+its bootstrap identity before advancing the pin. Normal development uses CoreCLR.
+
+## Playtesting
+
+`.den-serve.json` and `scripts/serve-playtest.sh` allow crew-services to start a
+private host per session. The local workstation profile is `rusty-fptester-hosted`:
 
 ```bash
-rusty build --project src/RustyTemplate.Game/RustyTemplate.Game.csproj --aot
+playtest start rusty-fptester-hosted
+playtest assist SESSION --json '{"op":"discover"}'
+playtest assist SESSION --json '{"op":"time","mode":"action-driven"}'
+playtest assist SESSION --json '{"op":"observe"}'
+playtest assist SESSION --json '{"op":"act","id":"jump","capture":true}'
+playtest stop SESSION
 ```
 
-## Repository shape
-
-| Path | Responsibility |
-| --- | --- |
-| `src/RustyTemplate.Game/` | Ordinary safe C# product, counter state, and product metadata |
-| `src/ui/main.js` | DOM presentation and semantic input |
-| `content/` | Product-authored content root |
-| `Directory.Build.props` | Matched Engine SDK/runtime pin |
-| `docs/architecture.md` | Current ownership and data flow |
-| `docs/ui.md` | DOM companion contract |
-| `docs/agent-review/` | Reusable review workflow and lane packets |
-
-The SDK generates the product's bind entry point inside its ordinary build;
-there is no composition project. The Engine runtime supplies the host and
-browser shell. Product metadata, input intents, content/UI
-roots, and projection identity live in the ordinary `.csproj`.
-
-## Start a product from this template
-
-1. Rename the C# directory/project, namespace, and entry type together, and use
-   the new project path with `rusty dev` and `rusty build`.
-2. Set the product ID/title and UI projection stream/contract in the project
-   file. Keep the C# stream/contract constants aligned. Define semantic intents
-   there and keep their C#/DOM callers aligned.
-3. Replace the counter domain and DOM UI with the product's behavior. Add
-   authored data under `content/` and load it through Engine services. Keep
-   documentation outside `src/ui/`; every file there is staged as a web asset.
-4. Customize `AGENTS.md` and the architecture owner map for the actual product.
-   Add a Den project or donor contract only if the new project uses one.
-5. Keep the generic review lanes, adding concrete owner pointers and relevant
-   task-specific questions as described in [the review guide](docs/agent-review/README.md).
-
-Read [AGENTS.md](AGENTS.md) before extending the product. Keep instructions
-about current behavior and ownership; exact dependency identities belong in
-configuration, and task status belongs in the task system.
+The runtime's generated debug catalog exposes `playtest.*` and `interaction.*`.
+Observations include cube positions/velocities, the last controller contact and
+an explicit `bumpPushSupported: false`. Target-ID interaction and relative debug
+look are assistance; they do not establish unaided aiming. See
+[architecture](docs/architecture.md), [donor evidence](docs/donor-consultation.md)
+and [verification](docs/verification.md).

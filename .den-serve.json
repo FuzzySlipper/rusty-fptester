@@ -1,0 +1,12 @@
+{
+  "project": "rusty-fptester",
+  "serve": {
+    "command": "bash scripts/serve-playtest.sh --bind-host {host} --port {port} --diagnostics-log {session_dir}/rusty-engine-diagnostics.ndjson",
+    "preferredPort": 0,
+    "healthUrl": "/product-bootstrap.json",
+    "readyText": "rusty-fptester",
+    "reusePolicy": "broker_owned",
+    "startupTimeout": "180s"
+  },
+  "playtest": {"startPath":"/", "viewport":{"width":1280,"height":720}, "headed":false,"recordVideo":false}
+}

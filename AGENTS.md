@@ -1,7 +1,7 @@
-# Rusty Template agent guidance
+# Rusty FP Tester agent guidance
 
-Rusty Template is a minimal C# counter product and starting point for downstream
-Rusty Engine projects. Keep it small enough to understand and customize.
+Rusty FP Tester is a small first-person controller and physics interaction lab.
+Keep it small enough to understand and reuse findings in other downstream products.
 
 > The product decides. The Engine guarantees.
 
@@ -22,7 +22,7 @@ and pause only decisions that need unavailable authority.
 
 ## Ownership and source
 
-- `src/RustyTemplate.Game/` owns counter state, application policy, semantic
+- `src/FpTester.Game/` owns lab definitions, player and interaction policy, semantic
   input interpretation, and UI facts. Organize additions by product domain;
   keep the product entry focused on explicit composition and lifecycle.
 - `Rusty.Engine` owns named Engine mechanisms: lifecycle/update admission,
@@ -88,10 +88,10 @@ agents are requested or the task's review workflow calls for them. Keep the
 same reviewer for fix rounds and reconcile source-backed findings against the
 original task. Review is not an extra user-approval gate.
 
-`rusty build --project src/RustyTemplate.Game/RustyTemplate.Game.csproj` builds
+`rusty build --project src/FpTester.Game/FpTester.Game.csproj` builds
 and stages the ordinary CoreCLR product; `--aot` additionally publishes NativeAOT. Use focused
 semantic or interaction evidence only when it answers the changed behavior;
-do not add broad test gates to this small template. Distinguish build/staging,
+do not add broad test gates to this small lab. Distinguish build/staging,
 host launch, and visible interaction claims. Repeat passed checks only after
 material changes or an unresolved failure.
 
