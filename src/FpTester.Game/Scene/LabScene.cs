@@ -33,7 +33,7 @@ internal sealed class LabScene : IDisposable
             new VoxelSceneMaterialBinding((uint)index + 1, Material(color))).ToArray();
         voxels = engine.VoxelScenePresentation.ProjectScene(new ProjectVoxelSceneRequest(Session, voxelMaterials));
         AdmitFixtures();
-        World = engine.Dynamics.CreateWorld(new DynamicsWorldConfig(new Vector3(0, -definition.Player.Gravity, 0)));
+        World = engine.Dynamics.CreateWorld(new DynamicsWorldConfig(new Vector3(0, -definition.Gravity, 0)));
         engine.Dynamics.BindWorldCollision(new DynamicsWorldCollisionBindingRequest(World, Session));
         foreach (CubeDefinition cube in definition.Cubes)
         {
@@ -77,6 +77,18 @@ internal sealed class LabScene : IDisposable
         return new CharacterObstacle(cube.Entity.Value, Pose(cube), new Vector3(-cube.Definition.Size / 2),
             new Vector3(cube.Definition.Size / 2), true, motion.LinearVelocity, motion.AngularVelocity);
     }).ToArray();
+
+    /// <summary>The cube the body stands on, at its current pose, so the Engine carries the body with it.</summary>
+    internal CharacterSupport Support(CharacterMotion motion, ulong? ignored)
+    {
+        if (!motion.SupportEntityPresent) return default;
+        LabCube? supported = Cubes.Find(cube => cube.Entity.Value == motion.SupportEntity && cube.Entity.Value != ignored);
+        return supported is null
+            ? new CharacterSupport(true, CharacterSupportLifecycle.Destroyed, motion.SupportEntity, default)
+            : new CharacterSupport(true, CharacterSupportLifecycle.Active, motion.SupportEntity, Pose(supported));
+    }
+
+    internal EntityId? CubeEntity(ulong id) => Cubes.Find(cube => cube.Entity.Value == id)?.Entity;
 
     internal ReadOnlyMemory<SpatialEntityCollider> Colliders() => colliderProjection.ReconcileTriggers(SimulationStep, SpatialTriggerCause.Movement).Entities;
 

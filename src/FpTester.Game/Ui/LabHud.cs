@@ -15,9 +15,14 @@ internal static class LabHud
             ("stance",player.Stance), ("grounded",player.Grounded ? "GROUNDED" : "AIRBORNE"),
             ("support",player.SupportEntity?.ToString() ?? "world"),
             ("contact",$"{player.Contact} / {player.ContactEntity?.ToString() ?? "world"}"),
-            ("blocks",player.BlockFlags), ("target",observation.Target), ("message",observation.Message),
+            ("blocks",player.BlockFlags), ("target",observation.Target), ("message",observation.Message), ("notice",observation.Notice),
             ("held",observation.HeldCube is null ? "" : observation.Target),
             ("step",observation.Stamp.Step.ToString()),
+            ("world",observation.WorldTime),
+            ("landings",FormattableString.Invariant($"jumps {player.Jumps} · landings {player.Landings} · hard {player.HardLandings} · last {player.LastLandingSpeed:0.0} m/s")),
+            ("action",$"{observation.Action.Selected} ({observation.Action.Delivery})"),
+            ("phase",observation.Action.Current is { } current ? $"{current} · {observation.Action.Phase}" : "ready"),
+            ("hits",$"uses {observation.Action.Uses} · hits {observation.Action.Hits} · misses {observation.Action.Misses}"),
             ("actions",$"pickups {observation.Pickups} · throws {observation.Throws} · drops {observation.Drops}")
         ];
         List<byte> utf8 = [];

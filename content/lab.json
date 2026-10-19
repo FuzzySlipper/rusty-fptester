@@ -1,13 +1,8 @@
 {
   "voxelSize": 0.5,
-  "spawn": [8, 0.92, 5],
+  "gravity": 20,
+  "spawnFeet": [8, 0, 5],
   "spawnYawDegrees": 0,
-  "player": {
-    "height": 1.8, "crouchedHeight": 1.1, "radius": 0.3,
-    "speed": 4.5, "sprintSpeed": 7, "jumpSpeed": 6.5, "gravity": 20,
-    "maximumStepHeight": 0.3, "maximumSlopeDegrees": 45,
-    "pointerRadiansPerUnit": 0.002
-  },
   "interaction": {"reach": 3.5, "holdDistance": 2, "holdSlack": 0.15, "holdReelSpeed": 12, "throwSpeed": 11},
   "volumes": [
     {"label":"floor", "min":[0,-0.5,0], "max":[48,0,24], "material":1},

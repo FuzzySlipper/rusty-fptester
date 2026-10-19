@@ -1,7 +1,11 @@
 # Rusty FP Tester agent guidance
 
-Rusty FP Tester is a small first-person controller and physics interaction lab.
-Keep it small enough to understand and reuse findings in other downstream products.
+Rusty FP Tester is a small first-person controller, action and physics interaction
+lab, and the maintained first-person reference other products copy from. Keep it
+small enough to understand. [docs/reference.md](docs/reference.md) catalogues each
+reusable piece with its provenance and the products that copied it; keep it current
+when a piece changes, and fold generic improvements found in a product's copy back
+here (copy with provenance, never as a build dependency).
 
 > The product decides. The Engine guarantees.
 

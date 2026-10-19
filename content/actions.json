@@ -1,0 +1,54 @@
+{
+  "actions": [
+    {
+      "id": "jab",
+      "name": "Jab",
+      "delivery": { "kind": "Melee", "range": 2.0, "width": 0.5 },
+      "timing": { "windup": 0.12, "commit": 0.08, "recovery": 0.25, "cooldown": 0 },
+      "windupLabel": "Drawing back",
+      "commitLabel": "Jab",
+      "busyMovementScale": 0.8,
+      "impulse": 6
+    },
+    {
+      "id": "heavy",
+      "name": "Heavy swing",
+      "delivery": { "kind": "Melee", "range": 2.4, "width": 1.0 },
+      "timing": { "windup": 0.55, "commit": 0.15, "recovery": 0.7, "cooldown": 0 },
+      "windupLabel": "Winding up",
+      "commitLabel": "Swing",
+      "busyMovementScale": 0.35,
+      "impulse": 30
+    },
+    {
+      "id": "shot",
+      "name": "Shot",
+      "delivery": { "kind": "Hitscan", "range": 40 },
+      "timing": { "windup": 0, "commit": 0.05, "recovery": 0.2, "cooldown": 0 },
+      "windupLabel": "Aiming",
+      "commitLabel": "Shot",
+      "busyMovementScale": 1,
+      "impulse": 8
+    },
+    {
+      "id": "bolt",
+      "name": "Bolt",
+      "delivery": { "kind": "Projectile", "range": 30, "width": 0.2, "speed": 18 },
+      "timing": { "windup": 0.1, "commit": 0.05, "recovery": 0.3, "cooldown": 0.5 },
+      "windupLabel": "Drawing",
+      "commitLabel": "Loose",
+      "busyMovementScale": 1,
+      "impulse": 10
+    },
+    {
+      "id": "burst",
+      "name": "Burst",
+      "delivery": { "kind": "Area", "range": 2.5, "radius": 2 },
+      "timing": { "windup": 0.4, "commit": 0.1, "recovery": 0.5, "cooldown": 2 },
+      "windupLabel": "Gathering",
+      "commitLabel": "Burst",
+      "busyMovementScale": 0,
+      "impulse": 15
+    }
+  ]
+}

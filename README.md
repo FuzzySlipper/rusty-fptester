@@ -1,8 +1,13 @@
 # Rusty FP Tester
 
-A small first-person controller lab for Rusty Engine downstream projects. C# selects
-the test geometry, controller tuning and cube interaction rules. The pinned Engine
-owns input, character collision, rigid-body physics, rendering and the host.
+A small first-person controller and action lab for Rusty Engine downstream projects,
+and the **maintained first-person reference to copy from**: the body and camera, a
+product-neutral melee/hitscan/projectile/area action model, world time controls and
+developer tooling. [docs/reference.md](docs/reference.md) names each piece, what it
+is for, where it came from and which products copied it. C# selects the test
+geometry, controller tuning, actions and cube interaction rules. The pinned Engine
+owns input, character collision (including jump buffering and coyote time),
+rigid-body physics, rendering and the host.
 
 ## Run
 
@@ -23,8 +28,12 @@ Open the URL printed by the host and click the scene to capture the mouse.
 | Ctrl / gamepad B | Crouch |
 | Shift / left stick click | Sprint |
 | E / gamepad X | Pick up the focused cube; drop the held cube |
-| Primary mouse / right trigger | Throw the held cube |
-| R / HUD Reset lab button | Reset player and cubes |
+| Primary mouse / right trigger | Use the selected action; throw the held cube |
+| 1–5 / Q | Choose the action (jab, heavy, shot, bolt, burst) / the next one |
+| P / O | Hold or resume the world / step it one frame |
+| R / HUD Reset lab button | Reset player, cubes and action counts |
+| M | Pause menu (Engine lifecycle pause) |
+| F3 | Developer shell (needs `--live-debug`) |
 | Escape | Release pointer lock |
 
 ## Scene
@@ -38,10 +47,14 @@ Three connected voxel rooms share a level floor and open overhead space:
 - **Physics sandbox:** 0.5-, 1- and 1.5-metre dynamic cubes with different masses,
   plus a small stack. A second set near spawn makes pickup tests quick.
 
-`content/lab.json` owns the scene, player tuning, masses and hold/throw values.
-Edits rebuild/reload through `rusty dev`. The HUD reports feet, velocity, stance,
-grounding, support, contacts, blocking and interaction counts. `R` resets the
-current lab without rewinding Engine simulation time.
+`content/lab.json` owns the scene, spawn, world gravity, masses and hold/throw
+values; edits restage through `rusty dev`. `content/player.json` (body and camera
+feel, including the Engine jump buffer and coyote seconds) and `content/actions.json`
+(the actions) are live content: edits, and the developer shell's tunables panel,
+apply without a restart. The HUD reports feet, velocity, stance, grounding, support,
+contacts, blocking, jumps and landings, the action and its phase, hits and world
+time. Struck cubes take the action's impulse. `R` resets the current lab without
+rewinding Engine simulation time.
 
 **Known Engine gap:** character collision with the cubes is available, but the
 pinned C# bridge does not expose rigid-body contact push impulse proposals.
@@ -83,9 +96,20 @@ playtest assist SESSION --json '{"op":"act","id":"jump","capture":true}'
 playtest stop SESSION
 ```
 
-The runtime's generated debug catalog exposes `playtest.*` and `interaction.*`.
-Observations include cube positions/velocities, the last controller contact and
-an explicit `bumpPushSupported: false`. Target-ID interaction and relative debug
+The runtime's generated debug catalog exposes `playtest.*`, `interaction.*`,
+`tunables.*`, `inspect.targets`, `spatial.grid|probe|clearance`, `playtest.jump-plan`,
+`entity.*` and the lab's own commands:
+
+| Command | Does |
+| --- | --- |
+| `fptester.inspect` | Full observation: body, look, last step, Engine jump buffer/coyote remaining, body events, input readout, action and last impact, world time, cubes |
+| `fptester.dev.view X Y Z YAW PITCH` | Stand with feet at a point (nearest clear, floored place within 2 m) facing a view, for repeatable captures |
+| `fptester.time`, `.rate R`, `.hold`, `.run`, `.step S` | The lab's world time (GameplayTime): slow motion, hold, bounded step |
+| `fptester.action.select ID` | Choose the primary action |
+
+Show the action volumes without the shell with
+`engine.inspect.overlay show set actions.volumes`. Observations include an
+explicit `bumpPushSupported: false`. Target-ID interaction and relative debug
 look are assistance; they do not establish unaided aiming. See
 [architecture](docs/architecture.md), [donor evidence](docs/donor-consultation.md)
 and [verification](docs/verification.md).
